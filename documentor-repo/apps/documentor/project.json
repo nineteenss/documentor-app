@@ -1,0 +1,9 @@
+{
+  "name": "documentor",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/documentor/src",
+  "projectType": "application",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project documentor --web",
+  "targets": {}
+}

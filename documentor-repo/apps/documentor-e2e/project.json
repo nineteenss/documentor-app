@@ -1,0 +1,10 @@
+{
+  "name": "documentor-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/documentor-e2e/src",
+  "tags": [],
+  "implicitDependencies": ["documentor"],
+  "// targets": "to see all targets run: nx show project documentor-e2e --web",
+  "targets": {}
+}
