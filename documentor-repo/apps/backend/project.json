@@ -53,22 +53,6 @@
           "buildTarget": "backend:build:production"
         }
       }
-    },
-    "dev": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "ts-node apps/backend/src/main.ts",
-        "cwd": "apps/backend",
-        "envFile": "apps/backend/.env"
-      },
-      "configurations": {
-        "development": {
-          "command": "nodemon --watch apps/backend/src/**/*.ts --exec ts-node apps/backend/src/main.ts"
-        },
-        "production": {
-          "command": "node apps/backend/dist/main.ts"
-        }
-      }
     }
   }
 }
