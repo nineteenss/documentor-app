@@ -7,12 +7,20 @@
 
 import { atom } from 'jotai'
 
+export interface User {
+  id: string; // Unique identifier for the user
+  username: string; // Username of the user
+}
+
+// Atoms to store username and password inputs
+export const usernameAtom = atom<string>('')
+export const passwordAtom = atom<string>('')
+
+// Atom to store userId
+export const userIdAtom = atom<string>('')
+
 // Atom to store the current user
-export const userAtom = atom<{
-  username: string,
-  _id: string
-} | null>(null)
+export const userAtom = atom<User | null>(null)
 
 // Atom to store authenticaiton status
-// Convert a value to a boolean (!!)
-export const isAuthenticatedAtom = atom((get) => !!get(userAtom))
+export const isAuthenticatedAtom = atom<boolean>(false)

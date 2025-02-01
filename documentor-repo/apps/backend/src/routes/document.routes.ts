@@ -7,6 +7,7 @@
 
 import { registerRoute } from "../lib/router"
 import { createDocument, deleteDocumentById } from "../services/document.service"
+import UserModel from "../models/user.model"
 
 // Document creation endpoint
 registerRoute('POST', '/documents', async (req, res, _params, body) => {
@@ -22,6 +23,26 @@ registerRoute('POST', '/documents', async (req, res, _params, body) => {
   res.end(JSON.stringify(document))
   // Debug
   console.warn('Document created:', document.id)
+})
+
+// Fetch documents for a specific user
+registerRoute('GET', '/documents/user/:userId', async (req, res, params) => {
+  const userId = params.userId
+
+  if (!userId) {
+    throw { statusCode: 400, message: 'Missing user ID' }
+  }
+
+  // Fetch user and populate 'documents' array
+  const user = await UserModel.findById(userId).populate('documents')
+
+  if (!user) {
+    throw { statusCode: 404, message: 'User not found' }
+  }
+
+  const documents = user.documents || [];
+  res.setHeader('Content-Type', 'application/json')
+  res.end(JSON.stringify(documents))
 })
 
 // Document deletion endpoint

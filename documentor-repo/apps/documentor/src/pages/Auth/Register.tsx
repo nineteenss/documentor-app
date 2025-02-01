@@ -5,55 +5,74 @@
 //  Created by Sergey Smetannikov on 01.02.2025
 //
 
-import { useMutation } from '@tanstack/react-query';
+// apps/editor/src/pages/Auth/Register.tsx
+import { TextInput, PasswordInput, Button, Center, Text } from '@mantine/core';
+import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { TextInput, Button, Title } from '@mantine/core';
-import { atom, useAtom } from 'jotai';
-import { userAtom } from '../../stores/auth.stores';
+import { useAtom } from 'jotai';
+import {
+  passwordAtom,
+  usernameAtom,
+  isAuthenticatedAtom,
+  userAtom,
+} from '../../stores/auth.stores';
 
-// Defining states as atoms
-const usernameAtom = atom('');
-const passwordAtom = atom('');
-
-const Register = () => {
+export function Register() {
+  // Using Jotai atoms for username and password
   const [username, setUsername] = useAtom(usernameAtom);
   const [password, setPassword] = useAtom(passwordAtom);
-  const navigate = useNavigate();
-  const [, setUser] = useAtom(userAtom); // Use Jotai to manage user state
 
-  const registerMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-      if (!response.ok) throw new Error('Registration failed');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setUser(data); // Update user state in Jotai
-      navigate('/documents'); // Redirect to documents page
-    },
-  });
+  const [, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
+  const [, setUser] = useAtom(userAtom);
+  const { registerMutation } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    // const formData = new FormData(e.target);
+    // const username = formData.get('username');
+    // const password = formData.get('password');
+
+    registerMutation.mutate(
+      { username, password },
+      {
+        onSuccess: (data) => {
+          setUser(data); // Update the user atom
+          setIsAuthenticated(true); // Update authentication status
+          setUsername('');
+          setPassword('');
+          navigate('/documents');
+        },
+      }
+    );
+  };
 
   return (
-    <div>
-      <Title>Register</Title>
-      <TextInput
-        label="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <TextInput
-        label="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <Button onClick={() => registerMutation.mutate()}>Register</Button>
-    </div>
+    <Center style={{ height: '100vh' }}>
+      <form onSubmit={handleSubmit} style={{ width: 300 }}>
+        <TextInput
+          value={username}
+          onChange={(e) => setUsername(e.target.value)} // Update username state
+          label="Username"
+          required
+        />
+        <PasswordInput
+          value={password}
+          onChange={(e) => setPassword(e.target.value)} // Update password state
+          label="Password"
+          required
+          mt="sm"
+        />
+        <Button type="submit" fullWidth mt="md">
+          Register
+        </Button>
+        <Text mt="md">
+          Already have an account?{' '}
+          <a href="/login" style={{ color: 'blue' }}>
+            Login now
+          </a>
+        </Text>
+      </form>
+    </Center>
   );
-};
-
-export default Register;
+}

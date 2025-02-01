@@ -5,55 +5,80 @@
 //  Created by Sergey Smetannikov on 31.01.2025
 //
 
-import { useMutation } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TextInput, Button, Title } from '@mantine/core';
-import { atom, useAtom } from 'jotai';
-import { userAtom } from '../../stores/auth.stores';
+import { TextInput, PasswordInput, Button, Center, Text } from '@mantine/core';
+import { useAtom } from 'jotai';
+import { useAuth } from '../../hooks/useAuth';
+import {
+  passwordAtom,
+  usernameAtom,
+  isAuthenticatedAtom,
+  userAtom,
+} from '../../stores/auth.stores';
 
-// Defining states as atoms
-const usernameAtom = atom('');
-const passwordAtom = atom('');
-
-const Login = () => {
+export function Login() {
+  // Using Jotai atoms for username and password
   const [username, setUsername] = useAtom(usernameAtom);
   const [password, setPassword] = useAtom(passwordAtom);
-  const navigate = useNavigate();
-  const [, setUser] = useAtom(userAtom);
 
-  const loginMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-      if (!response.ok) throw new Error('Login failed');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setUser(data);
-      navigate('/documents');
-    },
-  });
+  const [, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
+  const [, setUser] = useAtom(userAtom);
+  const { loginMutation } = useAuth();
+  const navigate = useNavigate();
+
+  // Resetting atoms in case somehow returned to login page
+  useEffect(() => {
+    setUsername('');
+    setPassword('');
+  }, [setUsername, setPassword]);
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    // const formData = new FormData(e.target);
+    // const username = formData.get('username') as string;
+    // const password = formData.get('password') as string;
+
+    loginMutation.mutate(
+      { username, password },
+      {
+        onSuccess: (data) => {
+          setUser(data); // Update the user atom
+          setIsAuthenticated(true); // Update authentication status
+          setUsername('');
+          setPassword('');
+          navigate('/documents');
+        },
+      }
+    );
+  };
 
   return (
-    <div>
-      <Title>Login</Title>
-      <TextInput
-        label="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <TextInput
-        label="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <Button onClick={() => loginMutation.mutate()}>Login</Button>
-    </div>
+    <Center style={{ height: '100vh' }}>
+      <form onSubmit={handleSubmit} style={{ width: 300 }}>
+        <TextInput
+          value={username}
+          onChange={(e) => setUsername(e.target.value)} // Update username state
+          label="Username"
+          required
+        />
+        <PasswordInput
+          value={password}
+          onChange={(e) => setPassword(e.target.value)} // Update password state
+          label="Password"
+          required
+          mt="sm"
+        />
+        <Button type="submit" fullWidth mt="md">
+          Login
+        </Button>
+        <Text mt="md">
+          Don't have an account?{' '}
+          <a href="/register" style={{ color: 'blue' }}>
+            Register now
+          </a>
+        </Text>
+      </form>
+    </Center>
   );
-};
-
-export default Login;
+}
