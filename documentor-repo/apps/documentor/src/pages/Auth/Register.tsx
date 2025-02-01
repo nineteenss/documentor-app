@@ -1,8 +1,8 @@
 //
-//  Login.tsx
+//  Register.tsx
 //  documentor-app
 //
-//  Created by Sergey Smetannikov on 31.01.2025
+//  Created by Sergey Smetannikov on 01.02.2025
 //
 
 import { useMutation } from '@tanstack/react-query';
@@ -15,31 +15,31 @@ import { userAtom } from '../../stores/auth.stores';
 const usernameAtom = atom('');
 const passwordAtom = atom('');
 
-const Login = () => {
+const Register = () => {
   const [username, setUsername] = useAtom(usernameAtom);
   const [password, setPassword] = useAtom(passwordAtom);
   const navigate = useNavigate();
-  const [, setUser] = useAtom(userAtom);
+  const [, setUser] = useAtom(userAtom); // Use Jotai to manage user state
 
-  const loginMutation = useMutation({
+  const registerMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch('/auth/login', {
+      const response = await fetch('/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
-      if (!response.ok) throw new Error('Login failed');
+      if (!response.ok) throw new Error('Registration failed');
       return response.json();
     },
     onSuccess: (data) => {
-      setUser(data);
-      navigate('/documents');
+      setUser(data); // Update user state in Jotai
+      navigate('/documents'); // Redirect to documents page
     },
   });
 
   return (
     <div>
-      <Title>Login</Title>
+      <Title>Register</Title>
       <TextInput
         label="Username"
         value={username}
@@ -51,9 +51,9 @@ const Login = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Button onClick={() => loginMutation.mutate()}>Login</Button>
+      <Button onClick={() => registerMutation.mutate()}>Register</Button>
     </div>
   );
 };
 
-export default Login;
+export default Register;
