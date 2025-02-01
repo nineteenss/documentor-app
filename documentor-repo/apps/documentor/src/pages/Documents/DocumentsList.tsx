@@ -5,71 +5,41 @@
 //  Created by Sergey Smetannikov on 01.02.2025
 //
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { Button, List, Text } from '@mantine/core';
-// import { useAtom } from 'jotai';
-// import { documentsAtom } from '../../stores/documents.stores';
-// import { useEffect } from 'react';
+import { useDocuments } from '../../hooks/useDocuments';
+import { Card, Title, Button, Group } from '@mantine/core';
+import { Link } from 'react-router-dom';
 
-const DocumentsList = () => {
-  const navigate = useNavigate();
-  // const queryClient = useQueryClient();
-  // const [documents, setDocuments] = useAtom(documentsAtom);
+export function DocumentsList() {
+  const { documentsQuery } = useDocuments();
 
-  // Fetch documents
-  const {
-    data: documents,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['documents'],
-    queryFn: async () => {
-      const response = await fetch('/documents');
-      console.log('documents response:', response);
-      if (!response.ok) throw new Error('Failed to fetch documents');
-      return response.json();
-    },
-  });
+  console.log('documentsQuery:', documentsQuery); //debug
+  console.log('documentsQuery.data:', documentsQuery.data); //debug
+  const documentsData = documentsQuery.data || [];
+  console.log('documentsData:', documentsData); //debug
 
-  // Update Jotai state when data changes
-  // useEffect(() => {
-  //   if (data) setDocuments(data);
-  // }, [data, setDocuments]);
-
-  // Delete mutation
-  // const deleteMutation = useMutation({
-  //   mutationFn: async (id: string) => {
-  //     const response = await fetch(`/documents/${id}`, { method: 'DELETE' });
-  //     if (!response.ok) throw new Error('Failed to delete document');
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ['documents'] });
-  //   },
-  // });
-
-  if (isLoading) return <Text>Loading...</Text>;
-  if (isError) return <Text>Error fetching documents</Text>;
+  if (documentsQuery.isLoading) return <div>Loading...</div>;
+  if (documentsQuery.error) return <div>Error loading documents</div>;
 
   return (
     <div>
-      <Button onClick={() => navigate('/documents/new')}>
-        Create Document
-      </Button>
-      <List>
-        {documents?.map((doc: any) => (
-          <List.Item key={doc._id}>
-            <Text onClick={() => navigate(`/documents/${doc._id}`)}>
-              {doc.title}
-            </Text>
-            {/* <Button onClick={() => deleteMutation.mutate(doc._id)}>
-              Delete
-            </Button> */}
-          </List.Item>
-        ))}
-      </List>
+      <Group mb="md">
+        <Title>Documents</Title>
+        <Button component={Link} to="/documents/new">
+          Create Document
+        </Button>
+      </Group>
+      {documentsData.length === 0 ? (
+        <p>No documents found.</p>
+      ) : (
+        documentsData.map((doc) => (
+          <Card key={doc._id} shadow="sm" p="lg" mb="sm">
+            <Title order={3}>{doc.documentTitle}</Title>
+            <Button component={Link} to={`/documents/${doc._id}/edit`} mt="sm">
+              Edit
+            </Button>
+          </Card>
+        ))
+      )}
     </div>
   );
-};
-
-export default DocumentsList;
+}

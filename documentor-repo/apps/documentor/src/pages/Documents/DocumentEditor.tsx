@@ -5,90 +5,68 @@
 //  Created by Sergey Smetannikov on 01.02.2025
 //
 
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import { Button, TextInput } from '@mantine/core';
-import { atom, useAtom } from 'jotai';
-import { currentDocumentAtom } from '../../stores/documents.stores';
-import { userAtom } from '../../stores/auth.stores';
+import { useAtom } from 'jotai';
+import { Button, TextInput, Group, Title } from '@mantine/core';
+import { useDocuments } from '../../hooks/useDocuments';
+// import { useUserId } from '../../hooks/useAuth';
+import { RichTextEditor } from '../../components/RichTextEditor';
+import { titleAtom, contentAtom } from '../../stores/documents.stores';
+import { userIdAtom } from '../../stores/auth.stores';
+import { BASE_URL } from '../../lib/api';
 
-const titleAtom = atom('');
-
-const DocumentEditor = () => {
+export function DocumentEditor() {
+  const [userId] = useAtom(userIdAtom);
   const { id } = useParams();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { createDocumentMutation, setSelectedDocument, selectedDocument } =
+    useDocuments();
   const [title, setTitle] = useAtom(titleAtom);
-  const [, setCurrentDocument] = useAtom(currentDocumentAtom);
-  const [user] = useAtom(userAtom);
+  const [content, setContent] = useAtom(contentAtom);
 
-  // Setup Tiptap editor
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: '<p>Start writing...</p>',
-  });
-
-  // Fetch document data
-  const { data: document } = useQuery({
-    queryKey: ['document', id],
-    queryFn: async () => {
-      const response = await fetch(`/documents/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch document');
-      return response.json();
-    },
-    enabled: !!id,
-  });
-
-  // Update state when document data changes
   useEffect(() => {
-    if (document) {
-      setTitle(document.title);
-      editor?.commands.setContent(document.content);
-      setCurrentDocument(document);
+    if (id && !selectedDocument) {
+      // Fetch document by ID (you can add this logic to `useDocuments`)
+      const fetchDocument = async () => {
+        const response = await fetch(`${BASE_URL}/documents/${id}`);
+        const document = await response.json();
+        setTitle(document.documentTitle);
+        setContent(document.documentContent);
+        setSelectedDocument(document);
+      };
+      fetchDocument();
     }
-  }, [document, editor, setCurrentDocument, setTitle]); //setTitle
+  }, [id]);
 
-  // Save document mutation
-  const saveMutation = useMutation({
-    mutationFn: async () => {
-      const url = id ? `/documents/${id}` : '/documents';
-      const method = id ? 'PUT' : 'POST';
+  // Reset state when navigating away
+  useEffect(() => {
+    if (!id) {
+      setTitle('');
+      setContent({});
+      setSelectedDocument(null);
+    }
+  }, [id]);
 
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          content: editor?.getJSON(),
-          userId: user?._id,
-        }),
-      });
-      if (!response.ok) throw new Error('Failed to save document');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['documents'] });
-      navigate('/documents');
-    },
-  });
+  const handleSave = () => {
+    if (!userId) {
+      console.error('User not logged in');
+      return;
+    }
+    createDocumentMutation.mutate(
+      { title, content, userId },
+      { onSuccess: () => navigate('/documents') }
+    );
+  };
 
   return (
     <div>
-      <TextInput
-        label="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        mb="md"
-      />
-      <EditorContent editor={editor} />
-      <Button mt="md" onClick={() => saveMutation.mutate()}>
-        Save Document
-      </Button>
+      <Title>{id ? 'Edit Document' : 'New Document'}</Title>
+      <TextInput placeholder="Title" mb="md" />
+      <RichTextEditor />
+      <Group mt="md">
+        <Button onClick={handleSave}>Save Document</Button>
+      </Group>
     </div>
   );
-};
-
-export default DocumentEditor;
+}

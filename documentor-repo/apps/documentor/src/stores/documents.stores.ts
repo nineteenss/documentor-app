@@ -7,8 +7,20 @@
 
 import { atom } from 'jotai'
 
-// Atom  to store the list of documents
-export const documentsAtom = atom<any[]>([])
+// Defining Document interface
+export interface Document {
+  id: string; // Unique identifier for the document
+  documentTitle: string; // Title of the document
+  documentContent: object; // Content of the document (JSON object)
+  userId: string; // ID of the user who owns the document
+}
+
+// Atoms to store Title abd Content
+export const titleAtom = atom<string>('')
+export const contentAtom = atom<object>({})
+
+// Atom to store the list of documents
+export const documentsAtom = atom<Document[]>([])
 
 // Atom to store the currently selected document
-export const currentDocumentAtom = atom<any | null>(null)
+export const currentDocumentAtom = atom<Document | null>(null)
