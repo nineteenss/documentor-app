@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "backend:dev": "nx serve backend --configuration=development"
+    "backend:dev": "nx serve backend --configuration=development",
+    "documentor:dev": "nx serve documentor --configuration=development"
   },
   "private": true,
   "dependencies": {
