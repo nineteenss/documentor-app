@@ -6,7 +6,12 @@
 //
 
 import { registerRoute } from "../lib/router"
-import { createDocument, deleteDocumentById } from "../services/document.service"
+import {
+  createDocument,
+  getDocumentById,
+  updateDocumentById,
+  deleteDocumentById
+} from "../services/document.service"
 import UserModel from "../models/user.model"
 
 // Document creation endpoint
@@ -44,6 +49,45 @@ registerRoute('GET', '/documents/user/:userId', async (req, res, params) => {
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(documents))
 })
+
+registerRoute('GET', '/documents/:id', async (req, res, params) => {
+  if (!params.id) throw { statusCode: 400, message: 'Missing document ID' }
+
+  // Fetch requested document by ID and return result
+  const result = await getDocumentById(params.id)
+  res.setHeader('Content-Type', 'application/json')
+  res.end(JSON.stringify(result))
+})
+
+// Update document
+registerRoute('PUT', '/documents/:id', async (req, res, params, body) => {
+  if (!params.id) {
+    throw { statusCode: 400, message: 'Missing document ID' };
+  }
+
+  if (!body?.title || !body?.content) {
+    throw {
+      statusCode: 400,
+      message: 'Missing required fields: title or content'
+    };
+  }
+
+  const updatedDoc = await updateDocumentById(
+    params.id,
+    body.title,
+    body.content
+  );
+
+  if (!updatedDoc) {
+    throw {
+      statusCode: 404,
+      message: 'Document not found'
+    };
+  }
+
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(updatedDoc));
+});
 
 // Document deletion endpoint
 registerRoute('DELETE', '/documents/:id', async (req, res, params) => {
