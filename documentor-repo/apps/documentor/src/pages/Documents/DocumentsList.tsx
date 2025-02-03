@@ -12,10 +12,10 @@ import { Link } from 'react-router-dom';
 export function DocumentsList() {
   const { documentsQuery } = useDocuments();
 
-  console.log('documentsQuery:', documentsQuery); //debug
-  console.log('documentsQuery.data:', documentsQuery.data); //debug
+  // console.log('documentsQuery:', documentsQuery); //debug
+  // console.log('documentsQuery.data:', documentsQuery.data); //debug
   const documentsData = documentsQuery.data || [];
-  console.log('documentsData:', documentsData); //debug
+  // console.log('documentsData:', documentsData); //debug
 
   if (documentsQuery.isLoading) return <div>Loading...</div>;
   if (documentsQuery.error) return <div>Error loading documents</div>;
@@ -34,7 +34,7 @@ export function DocumentsList() {
         ) : (
           documentsData.map((doc) => (
             <Card key={doc._id} shadow="sm" p="lg" mb="sm">
-              <Title order={3}>{doc.documentTitle}</Title>
+              <Title order={3}>{doc.title}</Title>
               <Button
                 component={Link}
                 to={`/documents/${doc._id}/edit`}

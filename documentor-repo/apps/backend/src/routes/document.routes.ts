@@ -15,20 +15,21 @@ import {
 import UserModel from "../models/user.model"
 
 // Document creation endpoint
-registerRoute('POST', '/documents', async (req, res, _params, body) => {
-  // If there's no title, content or userId in the body, throw status code 400
-  // with 'Missing required fields' message
+registerRoute('POST', '/documents', async (req, res, params, body) => {
+
   if (!body?.title || !body?.content || !body?.userId) {
-    throw { statusCode: 400, message: 'Missing required fields' }
+    throw { statusCode: 400, message: 'Missing required fields' };
   }
 
-  // Create new document
-  const document = await createDocument(body.title, body.content, body.userId)
-  res.setHeader('Content-Type', 'application/json')
-  res.end(JSON.stringify(document))
-  // Debug
-  console.warn('Document created:', document.id)
-})
+  const newDoc = await createDocument(
+    body.title,
+    body.content,
+    body.userId
+  );
+
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(newDoc));
+});
 
 // Fetch documents for a specific user
 registerRoute('GET', '/documents/user/:userId', async (req, res, params) => {
@@ -100,6 +101,6 @@ registerRoute('DELETE', '/documents/:id', async (req, res, params) => {
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(result))
   // Debug
-  console.warn('Document deleted:', result.id)
+  // console.warn('Document deleted:', result.id)
 })
 

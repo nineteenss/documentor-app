@@ -16,7 +16,7 @@ export function useDocuments() {
 
   interface DocumentTypes {
     title: string,
-    content: object[],
+    content: object,
     userId: string
   }
 
@@ -28,12 +28,12 @@ export function useDocuments() {
     queryKey: ['documents', userId],
     queryFn: async () => {
       if (!userId) throw new Error('User not logged in')
-      console.log('userId:', userId); // Debugging line
+      // console.log('userId:', userId); // Debugging line
       const response = await fetch(`${BASE_URL}/documents/user/${userId}`);
       if (!response.ok) throw new Error('Failed to fetch documents');
 
       const data = await response.json() // Resolved value
-      console.log('Fetched documents:', data); // Debugging line
+      // console.log('Fetched documents:', data); // Debugging line
       return data;
     },
     enabled: !!userId
@@ -59,8 +59,8 @@ export function useDocuments() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, content, userId }),
       });
+      // console.log(userId)
 
-      console.log('Document created')
       if (!response.ok) throw new Error('Failed to create document');
       return response.json();
     },

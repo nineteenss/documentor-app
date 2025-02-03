@@ -6,42 +6,68 @@
 //
 
 import { useEffect } from 'react';
-import { useEditor, EditorContent, FloatingMenu } from '@tiptap/react';
+import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { JSONContent } from '@tiptap/core';
+
+// Default empty document structure
+const DEFAULT_CONTENT: JSONContent = {
+  type: 'doc',
+  content: [
+    {
+      type: 'paragraph',
+    },
+  ],
+};
 
 interface TextEditorTypes {
-  content: object;
-  onContentChange: (newContent: object) => void; // Callback to handle content updates
+  content: JSONContent;
+  onContentChange: (newContent: JSONContent) => void;
 }
 
 export function RichTextEditor({ content, onContentChange }: TextEditorTypes) {
-  // Editor setup
   const editor = useEditor({
     extensions: [StarterKit],
-    content,
+    content: DEFAULT_CONTENT, // content
   });
 
-  // Update editor content when prop changes
+  // Handle initial content and external changes
   useEffect(() => {
-    if (editor && content) {
-      editor.commands.setContent(content);
+    if (editor && !editor.isDestroyed) {
+      const currentContent = editor.getJSON();
+
+      // Use default content if empty, otherwise use provided content
+      const newContent = content?.content?.length ? content : DEFAULT_CONTENT;
+
+      // Only update if content is different
+      if (JSON.stringify(currentContent) !== JSON.stringify(newContent)) {
+        editor.commands.setContent(newContent);
+      }
     }
   }, [content, editor]);
 
-  // Handle editor updates
+  // Handle local editor updates
   useEffect(() => {
     if (!editor) return;
 
-    editor.on('update', ({ editor }) => {
+    const handleUpdate = ({ editor }) => {
       const newContent = editor.getJSON();
-      onContentChange(newContent);
-    });
-  }, [editor, onContentChange]);
+
+      // Only propagate changes if content is different
+      if (JSON.stringify(newContent) !== JSON.stringify(content)) {
+        onContentChange(newContent);
+      }
+    };
+
+    editor.on('update', handleUpdate);
+    return () => {
+      editor.off('update', handleUpdate);
+    };
+  }, [editor, onContentChange, content]);
 
   return (
     <div>
       <EditorContent editor={editor} />
-      {/* <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu> */}
     </div>
   );
 }

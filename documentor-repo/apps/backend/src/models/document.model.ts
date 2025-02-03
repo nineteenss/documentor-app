@@ -10,15 +10,15 @@ import mongoose, { Schema, Document } from 'mongoose'
 // Define an interface for the Document
 // Extending 'Document' ensures that TypeScript knows this object has Mongoose-specific methods
 export interface IDocument extends Document {
-  documentTitle: string
-  documentContent: object // Content of the document, stored as a JSON object
+  title: string
+  content: object // Content of the document, stored as a JSON object
   userId: string
 }
 
 // Defining user schema for Document model
 const DocumentSchema: Schema = new Schema({
-  documentTitle: { type: String, required: true },
-  documentContent: { type: Object }, // Content isn't required and can remain empty
+  title: { type: String, required: true },
+  content: { type: Object }, // Content isn't required and can remain empty
   userId: { type: String, required: true }
 });
 

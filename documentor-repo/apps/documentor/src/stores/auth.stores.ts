@@ -13,10 +13,6 @@ export interface User {
   username: string; // Username of the user
 }
 
-// Atoms to store username and password inputs
-export const usernameAtom = atom<string>('')
-export const passwordAtom = atom<string>('')
-
 // Atom to store userId in session storage for current session
 // const storage = createJSONStorage(() => localStorage)
 export const isAuthenticatedAtom = atomWithStorage<boolean>('isAuthenticated', false)

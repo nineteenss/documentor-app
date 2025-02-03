@@ -21,7 +21,7 @@ registerRoute('POST', '/auth/register', async (req, res, _params, body) => {
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(user))
   // Debug
-  console.warn('User registered:', user.id)
+  // console.warn('User registered:', user.id)
 })
 
 // Login endpoint
@@ -37,5 +37,5 @@ registerRoute('POST', '/auth/login', async (req, res, _params, body) => {
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(user))
   // Debug
-  console.warn('User logged in:', user.id)
+  // console.warn('User logged in:', user.id)
 })

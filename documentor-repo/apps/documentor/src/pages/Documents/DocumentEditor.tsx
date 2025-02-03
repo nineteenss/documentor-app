@@ -11,13 +11,24 @@ import { Button, TextInput, Group, Title } from '@mantine/core';
 import { useDocuments } from '../../hooks/useDocuments';
 import { RichTextEditor } from '../../components/RichTextEditor';
 import { BASE_URL } from '../../lib/api';
+import { userIdAtom } from '../../stores/auth.stores';
+import { useAtom } from 'jotai';
+import { JSONContent } from '@tiptap/react';
 
 export function DocumentEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState<object>({});
+  const [content, setContent] = useState<JSONContent>({
+    type: 'doc',
+    content: [
+      {
+        type: 'paragraph',
+      },
+    ],
+  });
   const [isLoading, setIsLoading] = useState(false);
+  const [userId] = useAtom(userIdAtom);
 
   const { createDocumentMutation, updateDocumentMutation } = useDocuments();
 
@@ -30,8 +41,8 @@ export function DocumentEditor() {
           if (!response.ok) throw new Error('Failed to fetch document');
           const document = await response.json();
 
-          setTitle(document.documentTitle);
-          setContent(document.documentContent);
+          setTitle(document.title);
+          setContent(document.content);
         } catch (error) {
           console.error('Error fetching document:', error);
         } finally {
@@ -48,15 +59,21 @@ export function DocumentEditor() {
   const handleSave = () => {
     const documentData = { title, content };
 
+    if (!userId) {
+      console.error('User not logged in');
+      return;
+    }
+
     if (id) {
       updateDocumentMutation.mutate(
         { id, ...documentData },
         { onSuccess: () => navigate('/documents') }
       );
     } else {
-      createDocumentMutation.mutate(documentData, {
-        onSuccess: () => navigate('/documents'),
-      });
+      createDocumentMutation.mutate(
+        { title, content, userId },
+        { onSuccess: () => navigate('/documents') }
+      );
     }
   };
 
