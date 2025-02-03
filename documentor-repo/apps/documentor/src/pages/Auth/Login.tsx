@@ -5,26 +5,23 @@
 //  Created by Sergey Smetannikov on 31.01.2025
 //
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextInput, PasswordInput, Button, Center, Text } from '@mantine/core';
-import { useAtom } from 'jotai';
 import { useAuth } from '../../hooks/useAuth';
-import { passwordAtom, usernameAtom } from '../../stores/auth.stores';
 
 export function Login() {
-  // Using Jotai atoms for username and password
-  const [username, setUsername] = useAtom(usernameAtom);
-  const [password, setPassword] = useAtom(passwordAtom);
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   const { loginMutation } = useAuth();
   const navigate = useNavigate();
 
-  // Resetting atoms in case somehow returned to login page
-  useEffect(() => {
-    setUsername('');
-    setPassword('');
-  }, [setUsername, setPassword]);
+  // // Resetting atoms in case somehow returned to login page
+  // useEffect(() => {
+  //   setUsername('');
+  //   setPassword('');
+  // }, [setUsername, setPassword]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

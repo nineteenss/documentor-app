@@ -15,7 +15,7 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   return (
     <MantineProvider
       withCssVariables={true}
-      defaultColorScheme="light"
+      defaultColorScheme="auto"
       theme={DEFAULT_THEME}
     >
       {children}

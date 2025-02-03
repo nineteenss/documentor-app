@@ -8,25 +8,18 @@
 import { TextInput, PasswordInput, Button, Center, Text } from '@mantine/core';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { useAtom } from 'jotai';
-import {
-  passwordAtom,
-  usernameAtom,
-  // isAuthenticatedAtom,
-  // userAtom,
-} from '../../stores/auth.stores';
+import { useState } from 'react';
 
 export function Register() {
-  // Using Jotai atoms for username and password
-  const [username, setUsername] = useAtom(usernameAtom);
-  const [password, setPassword] = useAtom(passwordAtom);
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   // const [, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
   // const [, setUser] = useAtom(userAtom);
   const { registerMutation } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // const formData = new FormData(e.target);
     // const username = formData.get('username');
@@ -35,7 +28,7 @@ export function Register() {
     registerMutation.mutate(
       { username, password },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           // setUser(data); // Update the user atom
           // setIsAuthenticated(true); // Update authentication status
           setUsername('');

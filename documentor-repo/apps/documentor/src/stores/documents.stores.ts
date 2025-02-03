@@ -10,8 +10,8 @@ import { atom } from 'jotai'
 // Defining Document interface
 export interface Document {
   _id: string; // Unique identifier for the document
-  documentTitle: string; // Title of the document
-  documentContent: object; // Content of the document (JSON object)
+  title: string; // Title of the document
+  content: object; // Content of the document (JSON object)
   userId: string; // ID of the user who owns the document
 }
 
