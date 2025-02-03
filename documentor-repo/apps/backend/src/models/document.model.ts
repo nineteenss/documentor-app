@@ -12,12 +12,14 @@ import mongoose, { Schema, Document } from 'mongoose'
 export interface IDocument extends Document {
   documentTitle: string
   documentContent: object // Content of the document, stored as a JSON object
+  userId: string
 }
 
 // Defining user schema for Document model
 const DocumentSchema: Schema = new Schema({
   documentTitle: { type: String, required: true },
-  documentContent: { type: Object } // Content isn't required and can remain empty
+  documentContent: { type: Object }, // Content isn't required and can remain empty
+  userId: { type: String, required: true }
 });
 
 export default mongoose.model<IDocument>('Document', DocumentSchema);

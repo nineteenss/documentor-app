@@ -5,26 +5,21 @@
 //  Created by Sergey Smetannikov on 02.02.2025
 //
 
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { BASE_URL } from '../lib/api'
-import { userAtom, userIdAtom, isAuthenticatedAtom } from '../stores/auth.stores'
+import { userIdAtom, isAuthenticatedAtom, loginAtom, logoutAtom } from '../stores/auth.stores'
 import { useAtom } from 'jotai'
 
-// export function useUserId() {
-//   const [user] = useAtom(userAtom);
-//   return user?.id || null; // Return the user ID or null if no user is logged in
-// }
-
 export function useAuth() {
-
   interface AuthCredentials {
     username: string;
     password: string;
   }
 
-  const [user, setUser] = useAtom(userAtom);
-  const [isLoggedIn, setIsLoggedIn] = useAtom(isAuthenticatedAtom);
-  const [userId, setUserId] = useAtom(userIdAtom)
+  const [isAuthenticated] = useAtom(isAuthenticatedAtom);
+  const [userId] = useAtom(userIdAtom)
+  const [, login] = useAtom(loginAtom)
+  const [, logout] = useAtom(logoutAtom)
 
   // Login mutation
   const loginMutation = useMutation({
@@ -34,14 +29,13 @@ export function useAuth() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
+
       if (!response.ok) throw new Error('Login failed');
       return response.json();
     },
     onSuccess: (data) => {
-      setUser(data);
-      setUserId(data._id) // Replaced 'id' with '_id' to start receiving correct data
-      // console.log('data.id:', data._id)
-      setIsLoggedIn(true);
+      // setUserId(data._id) // Replaced 'id' with '_id' to start receiving correct data
+      login(data._id)
     },
   });
 
@@ -53,22 +47,26 @@ export function useAuth() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
+
       if (!response.ok) throw new Error('Registration failed');
       return response.json();
     },
     onSuccess: (data) => {
-      setUser(data);
-      setUserId(data._id) // Replaced 'id' with '_id' to start receiving correct data
-      setIsLoggedIn(true);
+      // setUserId(data._id) // Replaced 'id' with '_id' to start receiving correct data
+      login(data._id)
     },
   });
 
   // Logout logic
-  const logout = () => {
-    setUser(null);
-    setUserId('')
-    setIsLoggedIn(false);
-  };
+  // const logout = () => {
+  //   setUserId(null)
+  // };
 
-  return { loginMutation, registerMutation, logout };
+  return {
+    userId,
+    loginMutation,
+    registerMutation,
+    logout,
+    isAuthenticated
+  };
 }

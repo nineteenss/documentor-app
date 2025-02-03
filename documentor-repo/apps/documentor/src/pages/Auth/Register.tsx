@@ -5,7 +5,6 @@
 //  Created by Sergey Smetannikov on 01.02.2025
 //
 
-// apps/editor/src/pages/Auth/Register.tsx
 import { TextInput, PasswordInput, Button, Center, Text } from '@mantine/core';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -13,8 +12,8 @@ import { useAtom } from 'jotai';
 import {
   passwordAtom,
   usernameAtom,
-  isAuthenticatedAtom,
-  userAtom,
+  // isAuthenticatedAtom,
+  // userAtom,
 } from '../../stores/auth.stores';
 
 export function Register() {
@@ -22,8 +21,8 @@ export function Register() {
   const [username, setUsername] = useAtom(usernameAtom);
   const [password, setPassword] = useAtom(passwordAtom);
 
-  const [, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
-  const [, setUser] = useAtom(userAtom);
+  // const [, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
+  // const [, setUser] = useAtom(userAtom);
   const { registerMutation } = useAuth();
   const navigate = useNavigate();
 
@@ -37,8 +36,8 @@ export function Register() {
       { username, password },
       {
         onSuccess: (data) => {
-          setUser(data); // Update the user atom
-          setIsAuthenticated(true); // Update authentication status
+          // setUser(data); // Update the user atom
+          // setIsAuthenticated(true); // Update authentication status
           setUsername('');
           setPassword('');
           navigate('/documents');

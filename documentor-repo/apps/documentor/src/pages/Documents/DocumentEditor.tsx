@@ -5,68 +5,84 @@
 //  Created by Sergey Smetannikov on 01.02.2025
 //
 
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useAtom } from 'jotai';
 import { Button, TextInput, Group, Title } from '@mantine/core';
 import { useDocuments } from '../../hooks/useDocuments';
-// import { useUserId } from '../../hooks/useAuth';
 import { RichTextEditor } from '../../components/RichTextEditor';
-import { titleAtom, contentAtom } from '../../stores/documents.stores';
-import { userIdAtom } from '../../stores/auth.stores';
 import { BASE_URL } from '../../lib/api';
 
 export function DocumentEditor() {
-  const [userId] = useAtom(userIdAtom);
   const { id } = useParams();
   const navigate = useNavigate();
-  const { createDocumentMutation, setSelectedDocument, selectedDocument } =
-    useDocuments();
-  const [title, setTitle] = useAtom(titleAtom);
-  const [content, setContent] = useAtom(contentAtom);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState<object>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { createDocumentMutation, updateDocumentMutation } = useDocuments();
 
   useEffect(() => {
-    if (id && !selectedDocument) {
-      // Fetch document by ID (you can add this logic to `useDocuments`)
+    if (id) {
       const fetchDocument = async () => {
-        const response = await fetch(`${BASE_URL}/documents/${id}`);
-        const document = await response.json();
-        setTitle(document.documentTitle);
-        setContent(document.documentContent);
-        setSelectedDocument(document);
+        setIsLoading(true);
+        try {
+          const response = await fetch(`${BASE_URL}/documents/${id}`);
+          if (!response.ok) throw new Error('Failed to fetch document');
+          const document = await response.json();
+
+          setTitle(document.documentTitle);
+          setContent(document.documentContent);
+        } catch (error) {
+          console.error('Error fetching document:', error);
+        } finally {
+          setIsLoading(false);
+        }
       };
       fetchDocument();
-    }
-  }, [id]);
-
-  // Reset state when navigating away
-  useEffect(() => {
-    if (!id) {
+    } else {
       setTitle('');
       setContent({});
-      setSelectedDocument(null);
     }
   }, [id]);
 
   const handleSave = () => {
-    if (!userId) {
-      console.error('User not logged in');
-      return;
+    const documentData = { title, content };
+
+    if (id) {
+      updateDocumentMutation.mutate(
+        { id, ...documentData },
+        { onSuccess: () => navigate('/documents') }
+      );
+    } else {
+      createDocumentMutation.mutate(documentData, {
+        onSuccess: () => navigate('/documents'),
+      });
     }
-    createDocumentMutation.mutate(
-      { title, content, userId },
-      { onSuccess: () => navigate('/documents') }
-    );
   };
 
+  if (isLoading) return <div>Loading document...</div>;
+
   return (
-    <div>
-      <Title>{id ? 'Edit Document' : 'New Document'}</Title>
-      <TextInput placeholder="Title" mb="md" />
-      <RichTextEditor />
-      <Group mt="md">
-        <Button onClick={handleSave}>Save Document</Button>
-      </Group>
-    </div>
+    <Group p={'100px'}>
+      <div>
+        <Title>{id ? 'Edit Document' : 'New Document'}</Title>
+        <TextInput
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          mb="md"
+        />
+        <RichTextEditor
+          key={id || 'new'} // Force remount on document change
+          content={content}
+          onContentChange={setContent}
+        />
+        <Group mt="md">
+          <Button onClick={handleSave}>
+            {id ? 'Update Document' : 'Create Document'}
+          </Button>
+        </Group>
+      </div>
+    </Group>
   );
 }

@@ -7,7 +7,7 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { BASE_URL } from '../lib/api';
-import { documentsAtom, currentDocumentAtom } from '../stores/documents.stores';
+import { currentDocumentAtom } from '../stores/documents.stores';
 import { userIdAtom } from '../stores/auth.stores'
 import { useEffect } from 'react';
 import { useAtom } from 'jotai';
@@ -21,7 +21,6 @@ export function useDocuments() {
   }
 
   const [userId] = useAtom(userIdAtom);
-  // const [documents, setDocuments] = useAtom(documentsAtom);
   const [selectedDocument, setSelectedDocument] = useAtom(currentDocumentAtom);
 
   // Fetch documents query
@@ -40,12 +39,17 @@ export function useDocuments() {
     enabled: !!userId
   });
 
-  // Update documents state when the query succeeds
-  // useEffect(() => {
-  //   if (documentsQuery.data) {
-  //     setDocuments(documentsQuery.data);
-  //   }
-  // }, [documentsQuery.data, setDocuments]);
+  // Fetch document query
+  const fetchDocumentQuery = useQuery({
+    queryKey: ['document', selectedDocument?._id],
+    queryFn: async () => {
+      if (!selectedDocument?._id) return null;
+      const response = await fetch(`${BASE_URL}/documents/${selectedDocument?._id}`)
+      if (!response.ok) throw new Error('Failed to fetch selected document')
+      return response.json()
+    },
+    enabled: !!selectedDocument?._id
+  })
 
   // Create document mutation
   const createDocumentMutation = useMutation({
@@ -55,7 +59,27 @@ export function useDocuments() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, content, userId }),
       });
+
+      console.log('Document created')
       if (!response.ok) throw new Error('Failed to create document');
+      return response.json();
+    },
+  });
+
+  //Update document mutation
+  const updateDocumentMutation = useMutation({
+    mutationFn: async ({ id, title, content }: {
+      id: string,
+      title: string,
+      content: object
+    }) => {
+      const response = await fetch(`${BASE_URL}/documents/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update document');
       return response.json();
     },
   });
@@ -73,6 +97,7 @@ export function useDocuments() {
       const response = await fetch(`${BASE_URL}/documents/${documentId}`, {
         method: 'DELETE',
       });
+
       if (!response.ok) throw new Error('Failed to delete document');
       return response.json();
     },
@@ -88,8 +113,9 @@ export function useDocuments() {
   return {
     documentsQuery,
     createDocumentMutation,
+    updateDocumentMutation,
     deleteDocumentMutation,
-    selectedDocument,
     setSelectedDocument,
+    fetchDocumentQuery
   };
 }

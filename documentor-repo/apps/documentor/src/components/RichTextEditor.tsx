@@ -5,7 +5,8 @@
 //  Created by Sergey Smetannikov on 02.02.2025
 //
 
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEffect } from 'react';
+import { useEditor, EditorContent, FloatingMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
 interface TextEditorTypes {
@@ -14,15 +15,33 @@ interface TextEditorTypes {
 }
 
 export function RichTextEditor({ content, onContentChange }: TextEditorTypes) {
+  // Editor setup
   const editor = useEditor({
     extensions: [StarterKit],
     content,
-    onUpdate: ({ editor }) => {
-      onContentChange(editor.getJSON()); // Emit the updated content
-    },
   });
 
-  return <EditorContent editor={editor} />;
-}
+  // Update editor content when prop changes
+  useEffect(() => {
+    if (editor && content) {
+      editor.commands.setContent(content);
+    }
+  }, [content, editor]);
 
-// export default RichTextEditor;
+  // Handle editor updates
+  useEffect(() => {
+    if (!editor) return;
+
+    editor.on('update', ({ editor }) => {
+      const newContent = editor.getJSON();
+      onContentChange(newContent);
+    });
+  }, [editor, onContentChange]);
+
+  return (
+    <div>
+      <EditorContent editor={editor} />
+      {/* <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu> */}
+    </div>
+  );
+}

@@ -10,20 +10,13 @@ import { useNavigate } from 'react-router-dom';
 import { TextInput, PasswordInput, Button, Center, Text } from '@mantine/core';
 import { useAtom } from 'jotai';
 import { useAuth } from '../../hooks/useAuth';
-import {
-  passwordAtom,
-  usernameAtom,
-  isAuthenticatedAtom,
-  userAtom,
-} from '../../stores/auth.stores';
+import { passwordAtom, usernameAtom } from '../../stores/auth.stores';
 
 export function Login() {
   // Using Jotai atoms for username and password
   const [username, setUsername] = useAtom(usernameAtom);
   const [password, setPassword] = useAtom(passwordAtom);
 
-  const [, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
-  const [, setUser] = useAtom(userAtom);
   const { loginMutation } = useAuth();
   const navigate = useNavigate();
 
@@ -33,18 +26,13 @@ export function Login() {
     setPassword('');
   }, [setUsername, setPassword]);
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // const formData = new FormData(e.target);
-    // const username = formData.get('username') as string;
-    // const password = formData.get('password') as string;
 
     loginMutation.mutate(
       { username, password },
       {
-        onSuccess: (data) => {
-          setUser(data); // Update the user atom
-          setIsAuthenticated(true); // Update authentication status
+        onSuccess: () => {
           setUsername('');
           setPassword('');
           navigate('/documents');
