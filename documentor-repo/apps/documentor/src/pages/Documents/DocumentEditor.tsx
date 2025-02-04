@@ -7,7 +7,14 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, TextInput, Group, Title } from '@mantine/core';
+import {
+  Button,
+  TextInput,
+  Group,
+  Title,
+  Container,
+  Center,
+} from '@mantine/core';
 import { useDocuments } from '../../hooks/useDocuments';
 import { RichTextEditor } from '../../components/RichTextEditor';
 import { BASE_URL } from '../../lib/api';
@@ -80,9 +87,11 @@ export function DocumentEditor() {
   if (isLoading) return <div>Loading document...</div>;
 
   return (
-    <Group p={'100px'}>
+    <Container p={'100px'}>
       <div>
-        <Title>{id ? 'Edit Document' : 'New Document'}</Title>
+        <Center>
+          <Title mb="md">{id ? 'Edit Document' : 'New Document'}</Title>
+        </Center>
         <TextInput
           placeholder="Title"
           value={title}
@@ -95,11 +104,11 @@ export function DocumentEditor() {
           onContentChange={setContent}
         />
         <Group mt="md">
-          <Button onClick={handleSave}>
+          <Button radius="md" onClick={handleSave}>
             {id ? 'Update Document' : 'Create Document'}
           </Button>
         </Group>
       </div>
-    </Group>
+    </Container>
   );
 }

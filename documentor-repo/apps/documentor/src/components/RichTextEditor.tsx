@@ -6,7 +6,14 @@
 //
 
 import { useEffect } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
+import {
+  useEditor,
+  // EditorContent,
+  EditorEvents,
+  // FloatingMenu,
+} from '@tiptap/react';
+import '@mantine/tiptap/styles.css';
+import { RichTextEditor as MantineRichTextEditor } from '@mantine/tiptap';
 import StarterKit from '@tiptap/starter-kit';
 import { JSONContent } from '@tiptap/core';
 
@@ -50,7 +57,8 @@ export function RichTextEditor({ content, onContentChange }: TextEditorTypes) {
   useEffect(() => {
     if (!editor) return;
 
-    const handleUpdate = ({ editor }) => {
+    // Specified the type of the listener to 'EditorEvents['update']'
+    const handleUpdate = ({ editor }: EditorEvents['update']) => {
       const newContent = editor.getJSON();
 
       // Only propagate changes if content is different
@@ -67,7 +75,38 @@ export function RichTextEditor({ content, onContentChange }: TextEditorTypes) {
 
   return (
     <div>
-      <EditorContent editor={editor} />
+      <MantineRichTextEditor editor={editor}>
+        <MantineRichTextEditor.Toolbar>
+          <MantineRichTextEditor.ControlsGroup>
+            <MantineRichTextEditor.Bold />
+            <MantineRichTextEditor.Italic />
+            <MantineRichTextEditor.Underline />
+            <MantineRichTextEditor.Strikethrough />
+            <MantineRichTextEditor.ClearFormatting />
+          </MantineRichTextEditor.ControlsGroup>
+
+          <MantineRichTextEditor.ControlsGroup>
+            <MantineRichTextEditor.H1 />
+            <MantineRichTextEditor.H2 />
+            <MantineRichTextEditor.H3 />
+            <MantineRichTextEditor.H4 />
+          </MantineRichTextEditor.ControlsGroup>
+
+          <MantineRichTextEditor.ControlsGroup>
+            <MantineRichTextEditor.Blockquote />
+            <MantineRichTextEditor.Hr />
+            <MantineRichTextEditor.BulletList />
+            <MantineRichTextEditor.OrderedList />
+          </MantineRichTextEditor.ControlsGroup>
+
+          <MantineRichTextEditor.ControlsGroup>
+            <MantineRichTextEditor.Link />
+            <MantineRichTextEditor.Unlink />
+          </MantineRichTextEditor.ControlsGroup>
+        </MantineRichTextEditor.Toolbar>
+
+        <MantineRichTextEditor.Content />
+      </MantineRichTextEditor>
     </div>
   );
 }
