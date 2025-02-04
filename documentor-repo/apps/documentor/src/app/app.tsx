@@ -5,18 +5,13 @@ import { Register } from '../pages/Auth/Register';
 import { Login } from '../pages/Auth/Login';
 import { DocumentsList } from '../pages/Documents/DocumentsList';
 import { DocumentEditor } from '../pages/Documents/DocumentEditor';
-import { userIdAtom } from '../stores/auth.stores';
-import { useAtom } from 'jotai';
 
 export function App() {
-  const [userId] = useAtom(userIdAtom);
-
   return (
     <AppProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<DocumentsList />} />
           <Route path="/documents" element={<DocumentsList />} />

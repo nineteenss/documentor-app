@@ -9,6 +9,8 @@ import { TextInput, PasswordInput, Button, Center, Text } from '@mantine/core';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import clsx from 'clsx';
+import classes from '../pages.module.css';
 
 export function Register() {
   const [username, setUsername] = useState<string>('');
@@ -60,7 +62,7 @@ export function Register() {
         </Button>
         <Text mt="md">
           Already have an account?{' '}
-          <a href="/login" style={{ color: '#1971c2' }}>
+          <a href="/login" className={clsx(classes.color_blue)}>
             Login now
           </a>
         </Text>

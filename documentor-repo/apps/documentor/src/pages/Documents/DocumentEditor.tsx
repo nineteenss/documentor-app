@@ -84,7 +84,8 @@ export function DocumentEditor() {
     }
   };
 
-  if (isLoading) return <div>Loading document...</div>;
+  // Gonna replace with loader if needed
+  // if (isLoading) return <div>Loading document...</div>;
 
   return (
     <Container p={'100px'}>
