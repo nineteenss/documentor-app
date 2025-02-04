@@ -5,9 +5,7 @@
 //  Created by Sergey Smetannikov on 03.02.2025
 //
 
-// import { useAtom } from 'jotai';
 import { Navigate, Outlet } from 'react-router-dom';
-// import { isAuthenticatedAtom } from '../../stores/auth.stores';
 
 export function ProtectedRoute() {
   // Stopped reading from localStorage using Jotai since it does not fetch

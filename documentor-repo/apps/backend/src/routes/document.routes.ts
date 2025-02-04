@@ -13,6 +13,7 @@ import {
   deleteDocumentById
 } from "../services/document.service"
 import UserModel from "../models/user.model"
+import Document from "../models/document.model"
 
 // Document creation endpoint
 registerRoute('POST', '/documents', async (req, res, params, body) => {
@@ -21,10 +22,18 @@ registerRoute('POST', '/documents', async (req, res, params, body) => {
     throw { statusCode: 400, message: 'Missing required fields' }
   }
 
+  // Find the highest order number among existing documents for this user
+  const highestOrderDoc = await Document.findOne({ userId: body.userId })
+    .sort({ order: -1 }) // Sort by order in descending order
+    .limit(1);
+
+  const nextOrder = highestOrderDoc ? (highestOrderDoc.order || 0) + 1 : 0;
+
   const newDoc = await createDocument(
     body.title,
     body.content,
-    body.userId
+    body.userId,
+    nextOrder
   )
 
   res.setHeader('Content-Type', 'application/json')
@@ -51,6 +60,7 @@ registerRoute('GET', '/documents/user/:userId', async (req, res, params) => {
   res.end(JSON.stringify(documents))
 })
 
+// Fetch document by ID
 registerRoute('GET', '/documents/:id', async (req, res, params) => {
   if (!params.id) {
     throw { statusCode: 400, message: 'Missing document ID' }
@@ -90,6 +100,35 @@ registerRoute('PUT', '/documents/:id', async (req, res, params, body) => {
 
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(updatedDoc))
+})
+
+// Documents reorder
+registerRoute('PUT', '/documents/reorder', async (req, res, params, body) => {
+  // console.log('Received reorder request:', body); // Debug incoming request
+  if (!body?.updates || !Array.isArray(body.updates)) {
+    throw { statusCode: 400, message: 'Invalid updates data' }
+  }
+
+  //update multiple documents order
+  try {
+    const updates = await Promise.all(
+      body.updates.map(async ({ id, order }) => {
+        const updatedDoc = await Document.findByIdAndUpdate(
+          id,
+          { $set: { order } },
+          { new: true }
+        );
+        // console.log(`Updated doc ${id} with order ${order}:`, updatedDoc); // Debug updates
+        return updatedDoc;
+      })
+    );
+
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify(updates))
+  } catch (error) {
+    console.error('Reorder error:', error);
+    throw { statusCode: 500, message: 'Failed to reorder documents' }
+  }
 })
 
 // Document deletion endpoint

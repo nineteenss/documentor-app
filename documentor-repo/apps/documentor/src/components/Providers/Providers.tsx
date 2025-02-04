@@ -7,11 +7,11 @@
 
 import { ThemeProvider } from './ThemeProvider';
 import { Provider as JotaiProvider } from 'jotai';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '../../lib/api';
+import { PropsWithChildren } from 'react';
 
-const queryClient = new QueryClient();
-
-export const AppProvider = ({ children }: React.PropsWithChildren<unknown>) => (
+export const AppProvider = ({ children }: PropsWithChildren) => (
   <JotaiProvider>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>{children}</ThemeProvider>

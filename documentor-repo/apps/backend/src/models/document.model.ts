@@ -13,13 +13,15 @@ export interface IDocument extends Document {
   title: string
   content: object // Content of the document, stored as a JSON object
   userId: string
+  order: number
 }
 
 // Defining user schema for Document model
 const DocumentSchema: Schema = new Schema({
   title: { type: String, required: true },
   content: { type: Object }, // Content isn't required and can remain empty
-  userId: { type: String, required: true }
+  userId: { type: String, required: true },
+  order: { type: Number }
 });
 
 export default mongoose.model<IDocument>('Document', DocumentSchema);

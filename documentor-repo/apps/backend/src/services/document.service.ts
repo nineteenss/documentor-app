@@ -5,17 +5,17 @@
 //  Created by Sergey Smetannikov on 30.01.2025
 //
 
-import mongoose from 'mongoose';
 import DocumentModel from '../models/document.model'
 import UserModel from '../models/user.model'
 
 // Function to create a new document
 // The document is saved to the database, and its ID is added to the user's 'documents' array
-export async function createDocument(title: string, content: object, userId: string) {
+export async function createDocument(title: string, content: object, userId: string, order: number) {
   const document = new DocumentModel({
     title: title,
     content: content,
-    userId
+    userId,
+    order
   });
 
   const savedDocument = await document.save();

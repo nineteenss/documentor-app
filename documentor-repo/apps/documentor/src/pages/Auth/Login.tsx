@@ -5,7 +5,12 @@
 //  Created by Sergey Smetannikov on 31.01.2025
 //
 
-import { useEffect, useState } from 'react';
+import {
+  // useEffect,
+  useState,
+} from 'react';
+import clsx from 'clsx';
+import classes from '../pages.module.css';
 import { useNavigate } from 'react-router-dom';
 import { TextInput, PasswordInput, Button, Center, Text } from '@mantine/core';
 import { useAuth } from '../../hooks/useAuth';
@@ -59,7 +64,7 @@ export function Login() {
         </Button>
         <Text mt="md">
           Don't have an account?{' '}
-          <a href="/register" style={{ color: '#1971c2' }}>
+          <a href="/register" className={clsx(classes.color_blue)}>
             Register now
           </a>
         </Text>

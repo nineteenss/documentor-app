@@ -1,0 +1,19 @@
+.container {
+  position: relative;
+  padding-top: calc(1rem * var(--mantine-scale));
+}
+
+.selectable {
+  transition: transform 0.3s ease, background-color 0.2s ease;
+  will-change: transform;
+  cursor: grab;
+  user-select: none;
+}
+
+.selectable:active {
+  cursor: grabbing;
+}
+
+.selectable:hover {
+  background-color: rgba(0, 100, 255, 0.05);
+}
