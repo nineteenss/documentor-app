@@ -18,18 +18,18 @@ import UserModel from "../models/user.model"
 registerRoute('POST', '/documents', async (req, res, params, body) => {
 
   if (!body?.title || !body?.content || !body?.userId) {
-    throw { statusCode: 400, message: 'Missing required fields' };
+    throw { statusCode: 400, message: 'Missing required fields' }
   }
 
   const newDoc = await createDocument(
     body.title,
     body.content,
     body.userId
-  );
+  )
 
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(newDoc));
-});
+  res.setHeader('Content-Type', 'application/json')
+  res.end(JSON.stringify(newDoc))
+})
 
 // Fetch documents for a specific user
 registerRoute('GET', '/documents/user/:userId', async (req, res, params) => {
@@ -46,13 +46,15 @@ registerRoute('GET', '/documents/user/:userId', async (req, res, params) => {
     throw { statusCode: 404, message: 'User not found' }
   }
 
-  const documents = user.documents || [];
+  const documents = user.documents || []
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(documents))
 })
 
 registerRoute('GET', '/documents/:id', async (req, res, params) => {
-  if (!params.id) throw { statusCode: 400, message: 'Missing document ID' }
+  if (!params.id) {
+    throw { statusCode: 400, message: 'Missing document ID' }
+  }
 
   // Fetch requested document by ID and return result
   const result = await getDocumentById(params.id)
@@ -63,38 +65,40 @@ registerRoute('GET', '/documents/:id', async (req, res, params) => {
 // Update document
 registerRoute('PUT', '/documents/:id', async (req, res, params, body) => {
   if (!params.id) {
-    throw { statusCode: 400, message: 'Missing document ID' };
+    throw { statusCode: 400, message: 'Missing document ID' }
   }
 
   if (!body?.title || !body?.content) {
     throw {
       statusCode: 400,
       message: 'Missing required fields: title or content'
-    };
+    }
   }
 
   const updatedDoc = await updateDocumentById(
     params.id,
     body.title,
     body.content
-  );
+  )
 
   if (!updatedDoc) {
     throw {
       statusCode: 404,
       message: 'Document not found'
-    };
+    }
   }
 
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(updatedDoc));
-});
+  res.setHeader('Content-Type', 'application/json')
+  res.end(JSON.stringify(updatedDoc))
+})
 
 // Document deletion endpoint
 registerRoute('DELETE', '/documents/:id', async (req, res, params) => {
   // If there's no ID document or it's missing for some reason, throw status code 400
   // with 'Missing document ID' message
-  if (!params.id) throw { statusCode: 400, message: 'Missing document ID' }
+  if (!params.id) {
+    throw { statusCode: 400, message: 'Missing document ID' }
+  }
 
   // Delete selected document
   const result = await deleteDocumentById(params.id)

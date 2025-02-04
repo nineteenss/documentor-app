@@ -16,8 +16,8 @@ export interface Document {
 }
 
 // Atoms to store Title abd Content
-export const titleAtom = atom<string>('')
-export const contentAtom = atom<object>({})
+// export const titleAtom = atom<string>('')
+// export const contentAtom = atom<object>({})
 
 // Atom to store the list of documents
 export const documentsAtom = atom<Document[]>([])

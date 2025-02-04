@@ -6,7 +6,15 @@
 //
 
 import { useDocuments } from '../../hooks/useDocuments';
-import { Card, Title, Button, Group, Center } from '@mantine/core';
+import {
+  Card,
+  Title,
+  Button,
+  Group,
+  Center,
+  Container,
+  Grid,
+} from '@mantine/core';
 import { Link } from 'react-router-dom';
 
 export function DocumentsList() {
@@ -21,31 +29,30 @@ export function DocumentsList() {
   if (documentsQuery.error) return <div>Error loading documents</div>;
 
   return (
-    <Center>
-      <div>
-        <Group mb="md">
-          <Title>Documents</Title>
-          <Button component={Link} to="/documents/new">
-            Create Document
-          </Button>
-        </Group>
-        {documentsData.length === 0 ? (
-          <p>No documents found.</p>
-        ) : (
-          documentsData.map((doc) => (
-            <Card key={doc._id} shadow="sm" p="lg" mb="sm">
+    <Container p={'100px'}>
+      <Group mb="md" justify="center">
+        <Button component={Link} radius="md" to="/documents/new">
+          Create Document
+        </Button>
+      </Group>
+      {documentsData.length === 0 ? (
+        <p>No documents found.</p>
+      ) : (
+        documentsData.map((doc) => (
+          <Card key={doc._id} shadow="sm" p="lg" mb="sm">
+            <Group justify="space-between">
               <Title order={3}>{doc.title}</Title>
               <Button
                 component={Link}
+                radius="md"
                 to={`/documents/${doc._id}/edit`}
-                mt="sm"
               >
                 Edit
               </Button>
-            </Card>
-          ))
-        )}
-      </div>
-    </Center>
+            </Group>
+          </Card>
+        ))
+      )}
+    </Container>
   );
 }

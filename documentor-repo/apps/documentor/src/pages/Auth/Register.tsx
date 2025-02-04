@@ -55,12 +55,12 @@ export function Register() {
           required
           mt="sm"
         />
-        <Button type="submit" fullWidth mt="md">
+        <Button type="submit" radius="md" fullWidth mt="md">
           Register
         </Button>
         <Text mt="md">
           Already have an account?{' '}
-          <a href="/login" style={{ color: 'blue' }}>
+          <a href="/login" style={{ color: '#1971c2' }}>
             Login now
           </a>
         </Text>

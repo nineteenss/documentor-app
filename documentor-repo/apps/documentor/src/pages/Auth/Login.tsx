@@ -54,12 +54,12 @@ export function Login() {
           required
           mt="sm"
         />
-        <Button type="submit" fullWidth mt="md">
+        <Button type="submit" radius="md" fullWidth mt="md">
           Login
         </Button>
         <Text mt="md">
           Don't have an account?{' '}
-          <a href="/register" style={{ color: 'blue' }}>
+          <a href="/register" style={{ color: '#1971c2' }}>
             Register now
           </a>
         </Text>
