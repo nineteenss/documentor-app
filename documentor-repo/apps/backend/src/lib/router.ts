@@ -9,25 +9,6 @@ import http from 'http'
 import FindMyWay from 'find-my-way'
 import { parseRequestBody } from './utils'
 
-// Used this to create a custom router, but there's too complex logic to work on
-// so I have desicded to skip it for now
-// // type RouteHandler = (
-// //   req: http.IncomingMessage,
-// //   res: http.ServerResponse,
-// //   params: Record<string, string>
-// // ) => Promise<void> | void
-
-// // interface Route {
-// //   method: string
-// //   pathPatter: RegExp
-// //   paramNames: string[]
-// //   handler: RouteHandler
-// // }
-
-// // export class Router {
-// //   private routes: Route
-// // }
-
 // Using FindMyWay constructor with traditional HTTP/1.x version
 // as for TypeScript generic
 // SRC: https://www.typescriptlang.org/docs/handbook/2/generics.html

@@ -1,40 +1,38 @@
 //
-//  Login.tsx
+//  Register.tsx
 //  documentor-app
 //
-//  Created by Sergey Smetannikov on 31.01.2025
+//  Created by Sergey Smetannikov on 01.02.2025
 //
 
-import {
-  // useEffect,
-  useState,
-} from 'react';
-import clsx from 'clsx';
-import classes from '../pages.module.css';
-import { useNavigate } from 'react-router-dom';
 import { TextInput, PasswordInput, Button, Center, Text } from '@mantine/core';
 import { useAuth } from '../../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import clsx from 'clsx';
+import classes from '../pages.module.css';
 
-export function Login() {
+export function Register() {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  const { loginMutation } = useAuth();
+  // const [, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
+  // const [, setUser] = useAtom(userAtom);
+  const { registerMutation } = useAuth();
   const navigate = useNavigate();
-
-  // // Resetting atoms in case somehow returned to login page
-  // useEffect(() => {
-  //   setUsername('');
-  //   setPassword('');
-  // }, [setUsername, setPassword]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // const formData = new FormData(e.target);
+    // const username = formData.get('username');
+    // const password = formData.get('password');
 
-    loginMutation.mutate(
+    registerMutation.mutate(
       { username, password },
       {
         onSuccess: () => {
+          // setUser(data); // Update the user atom
+          // setIsAuthenticated(true); // Update authentication status
           setUsername('');
           setPassword('');
           navigate('/documents');
@@ -60,12 +58,12 @@ export function Login() {
           mt="sm"
         />
         <Button type="submit" radius="md" fullWidth mt="md">
-          Login
+          Register
         </Button>
         <Text mt="md">
-          Don't have an account?{' '}
-          <a href="/register" className={clsx(classes.color_blue)}>
-            Register now
+          Already have an account?{' '}
+          <a href="/login" className={clsx(classes.color_blue)}>
+            Login now
           </a>
         </Text>
       </form>

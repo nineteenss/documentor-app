@@ -10,6 +10,7 @@ export default defineConfig({
   server: {
     port: 4200,
     host: 'localhost',
+    open: true, // Automatically open the browser
   },
   preview: {
     port: 4300,

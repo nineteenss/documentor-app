@@ -10,16 +10,42 @@ import UserModel from '../models/user.model'
 
 // Function to create a new document
 // The document is saved to the database, and its ID is added to the user's 'documents' array
-export async function createDocument(title: string, content: object, userId: string) {
-  // Create a new document
-  const document = new DocumentModel({ documentTitle: title, documentContent: content })
-  const savedDocument = await document.save() // Save the document to the database
+export async function createDocument(title: string, content: object, userId: string, order: number) {
+  const document = new DocumentModel({
+    title: title,
+    content: content,
+    userId,
+    order
+  });
 
-  // Update the user's 'documents' array with the new document's ID
-  await UserModel.findByIdAndUpdate(userId, { $push: { documents: savedDocument._id } })
+  const savedDocument = await document.save();
+  await UserModel.findByIdAndUpdate(userId, {
+    $push: { documents: savedDocument._id }
+  });
 
-  // Return the saved document
-  return savedDocument
+  return savedDocument;
+}
+
+export async function updateDocumentById(
+  documentId: string,
+  title: string,
+  content: object
+) {
+  return await DocumentModel.findByIdAndUpdate(
+    documentId,
+    {
+      $set: {
+        title: title,
+        content: content
+      }
+    },
+    { new: true } // Return the updated document
+  );
+}
+
+
+export async function getDocumentById(documentId: string) {
+  return await DocumentModel.findById(documentId)
 }
 
 // Function to delete a document by its ID

@@ -3,14 +3,20 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "backend:dev": "nx serve backend --configuration=development"
+    "backend:dev": "nx serve backend --configuration=development",
+    "documentor:dev": "nx serve documentor --configuration=development",
+    "dev": "nx run-many --target=serve --projects=documentor,backend --parallel"
   },
   "private": true,
   "dependencies": {
     "@mantine/core": "^7.16.2",
     "@mantine/hooks": "^7.16.2",
+    "@mantine/tiptap": "^7.16.2",
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/react-query-devtools": "^5.66.0",
+    "@tiptap/extension-link": "^2.11.5",
+    "@tiptap/extension-strike": "^2.11.5",
+    "@tiptap/extension-underline": "^2.11.5",
     "@tiptap/pm": "^2.11.3",
     "@tiptap/react": "^2.11.3",
     "@tiptap/starter-kit": "^2.11.3",
