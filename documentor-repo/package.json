@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "backend:dev": "nx serve backend --configuration=development",
-    "documentor:dev": "nx serve documentor --configuration=development"
+    "documentor:dev": "nx serve documentor --configuration=development",
+    "dev": "nx run-many --target=serve --projects=documentor,backend --parallel"
   },
   "private": true,
   "dependencies": {
